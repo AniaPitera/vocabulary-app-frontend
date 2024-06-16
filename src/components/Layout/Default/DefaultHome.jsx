@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 
-const Home = () => {
+const DefaultHome = () => {
   return (
     <Box>
       <div>
@@ -14,4 +14,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default DefaultHome;

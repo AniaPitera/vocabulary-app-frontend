@@ -4,7 +4,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 
-export default function HeaderDefault() {
+export default function LoginHeader() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar>

@@ -20,7 +20,7 @@ const LightTooltip = styled(({ className, ...props }) => (
   },
 }));
 
-export default function HeaderDefault() {
+export default function DefaultHeader() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar>
@@ -40,9 +40,11 @@ export default function HeaderDefault() {
             aria-label="add"
             sx={{ mr: 2 }}
           >
-            <LightTooltip title="Utwórz nowy zestaw słówek">
-              <AddIcon />
-            </LightTooltip>
+            <Link to="/login" style={{ color: "white" }}>
+              <LightTooltip title="Utwórz nowy zestaw słówek">
+                <AddIcon />
+              </LightTooltip>
+            </Link>
           </IconButton>
           <Button href="/login" color="inherit">
             Zaloguj się
