@@ -16,9 +16,9 @@ import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import axios from 'axios';
 
-const defaultTheme = createTheme();
+const API_URL = 'http://localhost:8080/API';
 
 export default function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -29,17 +29,36 @@ export default function Login() {
     event.preventDefault();
   };
 
-  const handleSubmit = (event) => {
+  const login = async (email, password) => {
+    try {
+      const response = await axios.post(`${API_URL}/login`, { email, password });
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        return response.data;
+      }
+    } catch (error) {
+      console.error('Failed to login:', error);
+      throw error;
+    }
+  };
+
+  const handleSubmit = async(event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const email = data.get("email");
+    const password = data.get("password");
+
+    try {
+      const result = await login(email, password);
+      console.log('Logged in successfully:', result);
+      window.location.href = '/home';
+    } catch (error) {
+      console.error('Login failed:', error);
+      alert('Logowanie się nie powiodło. Spróbuj ponownie.');
+    }
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -117,6 +136,5 @@ export default function Login() {
           </Box>
         </Box>
       </Container>
-    </ThemeProvider>
   );
 }
