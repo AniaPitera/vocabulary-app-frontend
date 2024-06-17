@@ -9,7 +9,6 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import FormControl from "@mui/material/FormControl";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
@@ -18,7 +17,7 @@ import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-const defaultTheme = createTheme();
+
 
 export default function Register() {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -38,7 +37,7 @@ export default function Register() {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
@@ -125,6 +124,6 @@ export default function Register() {
           </Box>
         </Box>
       </Container>
-    </ThemeProvider>
+
   );
 }

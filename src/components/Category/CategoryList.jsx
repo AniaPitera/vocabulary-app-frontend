@@ -46,7 +46,7 @@ export default function CategoryList() {
   };
 
   const handleStartLearning = () => {
-    const categoryId = "123"; // t
+    const categoryId = "123"; 
     navigate(`/categories/${categoryId}/learn`);
   };
 
