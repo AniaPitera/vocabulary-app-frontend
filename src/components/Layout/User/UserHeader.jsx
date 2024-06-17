@@ -24,6 +24,11 @@ export default function UserHeader() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const logout = () => {
+    localStorage.removeItem('token'); 
+    window.location.href = '/login';
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar>
@@ -38,9 +43,6 @@ export default function UserHeader() {
           </Typography>
           <Button href="/categories" variant="contained" sx={{ mr: 2 }}>
             Moje zestawy słówek
-          </Button>
-          <Button href="/categories/add" variant="contained" sx={{ mr: 2 }}>
-            Utwórz nowy zestaw
           </Button>
           <IconButton
             onClick={handleClick}
@@ -101,7 +103,7 @@ export default function UserHeader() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={logout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>
