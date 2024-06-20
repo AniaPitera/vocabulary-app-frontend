@@ -3,7 +3,6 @@ import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import DefaultHome from "./components/Layout/Default/DefaultHome";
 import CategoryList from "./components/Category/CategoryList";
-import Footer from "./components/Layout/Footer";
 import UserLayout from "./components/Layout/User/UserLayout";
 import DefaultLayout from "./components/Layout/Default/DefaultLayout";
 import LoginLayout from "./components/Layout/Login/LoginLayout";
@@ -11,6 +10,7 @@ import HomeUser from "./components/Layout/User/UserHome";
 import AddCategory from "./components/Category/AddCategory";
 import { AuthProvider } from "./components/Auth/AuthContext";
 import WordList from "./components/Word/WordList";
+import NotFound from "./components/NotFound";
 
 const App = () => {
   return (
@@ -32,8 +32,8 @@ const App = () => {
           <Route element={<DefaultLayout />}>
             <Route path="/" element={<DefaultHome />} />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
-        <Footer />
       </AuthProvider>
     </BrowserRouter>
   );
