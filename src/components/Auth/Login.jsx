@@ -27,6 +27,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
   const { login } = useContext(AuthContext);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -35,9 +36,26 @@ export default function Login() {
     event.preventDefault();
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!email) {
+      newErrors.email = "Adres e-mail jest wymagany";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Adres e-mail jest nieprawidłowy";
+    }
+    if (!password) {
+      newErrors.password = "Hasło jest wymagane";
+    }
+    return newErrors;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
     try {
       const response = await axios.post("/token", {
         email,
@@ -82,12 +100,14 @@ export default function Login() {
             autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={Boolean(errors.email)}
+            helperText={errors.email}
           />
           <FormControl
             fullWidth
             required
             margin="normal"
-            type="password"
+            error={Boolean(errors.password)}
             autoComplete="current-password"
           >
             <InputLabel htmlFor="password">Hasło</InputLabel>
@@ -110,6 +130,11 @@ export default function Login() {
               }
               label="Hasło"
             />
+            {errors.password && (
+              <Typography variant="body2" color="error">
+                {errors.password}
+              </Typography>
+            )}
           </FormControl>
           <Button
             type="submit"

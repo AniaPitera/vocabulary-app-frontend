@@ -27,6 +27,7 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -34,8 +35,25 @@ export default function Register() {
     event.preventDefault();
   };
 
+  const validate = () => {
+    const newErrors = {};
+    if (!username) newErrors.username = "Nazwa użytkownika jest wymagana";
+    if (!email) {
+      newErrors.email = "Adres e-mail jest wymagany";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Adres e-mail jest nieprawidłowy";
+    }
+    if (!password) newErrors.password = "Hasło jest wymagane";
+    return newErrors;
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
     try {
       await axios.post("/user", {
@@ -79,6 +97,8 @@ export default function Register() {
             autoFocus
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            error={Boolean(errors.username)}
+            helperText={errors.username}
           />
           <TextField
             margin="normal"
@@ -90,11 +110,14 @@ export default function Register() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={Boolean(errors.email)}
+            helperText={errors.email}
           />
           <FormControl
             margin="normal"
             fullWidth
             required
+            error={Boolean(errors.password)}
             autoComplete="current-password"
           >
             <InputLabel htmlFor="password">Hasło</InputLabel>
@@ -117,6 +140,11 @@ export default function Register() {
               }
               label="Hasło"
             />
+            {errors.password && (
+              <Typography variant="body2" color="error">
+                {errors.password}
+              </Typography>
+            )}
           </FormControl>
 
           <Button
