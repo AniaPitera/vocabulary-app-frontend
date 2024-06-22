@@ -25,7 +25,7 @@ import AuthContext from "./AuthContext";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const { login } = useContext(AuthContext);
@@ -38,10 +38,8 @@ export default function Login() {
 
   const validate = () => {
     const newErrors = {};
-    if (!email) {
-      newErrors.email = "Adres e-mail jest wymagany";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Adres e-mail jest nieprawidłowy";
+    if (!username) {
+      newErrors.username = "Nazwa użytkownika jest wymagana";
     }
     if (!password) {
       newErrors.password = "Hasło jest wymagane";
@@ -57,12 +55,12 @@ export default function Login() {
       return;
     }
     try {
-      const response = await axios.post("/token", {
-        email,
+      const response = await axios.post("/login", {
+        username,
         password,
       });
-      if (response.data.token) {
-        login(response.data.token);
+      if (response.data.access) {
+        login(response.data.access);
       }
       console.log("Logged in successfully:");
     } catch (error) {
@@ -93,15 +91,15 @@ export default function Login() {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Adres e-mail"
-            name="email"
-            autoComplete="email"
+            id="username"
+            label="Nazwa użytkownika"
+            name="username"
+            autoComplete="username"
             autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={Boolean(errors.email)}
-            helperText={errors.email}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            error={Boolean(errors.username)}
+            helperText={errors.username}
           />
           <FormControl
             fullWidth
