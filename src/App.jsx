@@ -11,6 +11,7 @@ import AddCategory from "./components/Category/AddCategory";
 import { AuthProvider } from "./components/Auth/AuthContext";
 import WordList from "./components/Word/WordList";
 import NotFound from "./components/NotFound";
+import ProtectedRoutes from "./components/Auth/ProtectedRoutes";
 
 const App = () => {
   return (
@@ -22,7 +23,14 @@ const App = () => {
             <Route path="/register" element={<Register />} />
           </Route>
 
-          <Route element={<UserLayout />}>
+          <Route
+            element={
+              <ProtectedRoutes>
+                {" "}
+                <UserLayout />
+              </ProtectedRoutes>
+            }
+          >
             <Route path="/home" element={<HomeUser />} />
             <Route path="/categories" element={<CategoryList />} />
             <Route path="/categories/add" element={<AddCategory />} />
