@@ -12,15 +12,14 @@ import InputLabel from "@mui/material/InputLabel";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
-export default function AddCategory({ open, handleClose }) {
+export default function AddCategory({ open, handleClose, addCategory }) {
   const [name, setName] = useState("");
   const [wordLanguage, setWordLanguage] = useState("");
   const [translationLanguage, setTranslationLanguage] = useState("");
 
   const token = localStorage.getItem("token");
-
   const decodedToken = token ? jwtDecode(token) : null;
-  const userId = decodedToken ? decodedToken.sub : null;
+  const userId = decodedToken ? decodedToken.user_id : null;
 
   const handleWordLanguageChange = (event) => {
     setWordLanguage(event.target.value);
@@ -33,7 +32,7 @@ export default function AddCategory({ open, handleClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(
+      const response = await axios.post(
         "/category",
         {
           name,
@@ -47,6 +46,7 @@ export default function AddCategory({ open, handleClose }) {
           },
         }
       );
+      addCategory(response.data);
       handleClose();
     } catch (error) {
       console.error("Error creating category:", error);
