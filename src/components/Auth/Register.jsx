@@ -1,26 +1,24 @@
 import { useState } from "react";
+import axios from "axios";
 import {
+  Avatar,
+  Button,
   Container,
   CssBaseline,
-  Box,
-  Avatar,
-  Typography,
   TextField,
+  Box,
+  Typography,
+  Grid,
+  Link,
   FormControl,
   InputLabel,
   OutlinedInput,
   InputAdornment,
   IconButton,
-  Button,
-  Grid,
-  Link,
 } from "@mui/material";
-import {
-  Visibility,
-  VisibilityOff,
-  LockOutlined as LockOutlinedIcon,
-} from "@mui/icons-material";
-import axios from "axios";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -43,7 +41,20 @@ export default function Register() {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Adres e-mail jest nieprawidłowy";
     }
-    if (!password) newErrors.password = "Hasło jest wymagane";
+    if (!password) {
+      newErrors.password = "Hasło jest wymagane";
+    } else {
+      if (password.length < 8) {
+        newErrors.password = "Hasło musi mieć co najmniej 8 znaków";
+      }
+      if (/^\d+$/.test(password)) {
+        newErrors.password = "Hasło nie może składać się wyłącznie z cyfr";
+      }
+      if (password.includes(username)) {
+        newErrors.password =
+          "Hasło jest zbyt podobne do nazwy użytkownika lub adresu e-mail";
+      }
+    }
     return newErrors;
   };
 
@@ -56,7 +67,8 @@ export default function Register() {
     }
 
     try {
-      await axios.post("/user", {
+      setErrors({});
+      await axios.post("/register", {
         username,
         email,
         password,
