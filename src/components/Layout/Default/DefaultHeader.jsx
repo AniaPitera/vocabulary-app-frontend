@@ -46,9 +46,9 @@ export default function DefaultHeader() {
               </LightTooltip>
             </Link>
           </IconButton>
-          <Button href="/login" color="inherit">
-            Zaloguj się
-          </Button>
+          <Link to="/login">
+            <Button color="inherit">Zaloguj się</Button>
+          </Link>
         </Toolbar>
       </AppBar>
     </Box>
