@@ -5,10 +5,6 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
@@ -21,14 +17,6 @@ export default function AddCategory({ open, handleClose, addCategory }) {
   const decodedToken = token ? jwtDecode(token) : null;
   const userId = decodedToken ? decodedToken.user_id : null;
 
-  const handleWordLanguageChange = (event) => {
-    setWordLanguage(event.target.value);
-  };
-
-  const handleTranslationLanguageChange = (event) => {
-    setTranslationLanguage(event.target.value);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -36,8 +24,8 @@ export default function AddCategory({ open, handleClose, addCategory }) {
         "/category",
         {
           name,
-          wordLanguage,
-          translationLanguage,
+          word_language: wordLanguage,
+          translation_language: translationLanguage,
           user: userId,
         },
         {
@@ -75,40 +63,27 @@ export default function AddCategory({ open, handleClose, addCategory }) {
           id="name"
           onChange={(e) => setName(e.target.value)}
           name="category"
-          label="Podaj nazwę zestawu słówek"
+          label="Nazwa zestawu"
           fullWidth
         />
-        <FormControl fullWidth margin="dense" required>
-          <InputLabel id="word-language-label">
-            Podaj w jakim języku będą wpowadzane słowa
-          </InputLabel>
-          <Select
-            labelId="word-language-label"
-            id="word-language"
-            value={wordLanguage}
-            onChange={handleWordLanguageChange}
-            label="Podaj w jakim języku będą wpowadzane słowa"
-            fullWidth
-          >
-            <MenuItem value="polski">polski</MenuItem>
-            <MenuItem value="angielski">angielski</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl fullWidth margin="dense" required>
-          <InputLabel id="translation-language-label">
-            Podaj w jakim języku będą tłumaczenia słów
-          </InputLabel>
-          <Select
-            labelId="translation-language-label"
-            id="translation-language"
-            value={translationLanguage}
-            onChange={handleTranslationLanguageChange}
-            label="Podaj w jakim języku będą tłumaczenia słów"
-          >
-            <MenuItem value="polski">polski</MenuItem>
-            <MenuItem value="angielski">angielski</MenuItem>
-          </Select>
-        </FormControl>
+        <TextField
+          required
+          margin="dense"
+          id="word_language"
+          onChange={(e) => setWordLanguage(e.target.value)}
+          name="category"
+          label="Język słówek"
+          fullWidth
+        />
+        <TextField
+          required
+          margin="dense"
+          id="translation_language"
+          onChange={(e) => setTranslationLanguage(e.target.value)}
+          name="category"
+          label="Język tłumaczeń"
+          fullWidth
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Anuluj</Button>
