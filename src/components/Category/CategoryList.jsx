@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Typography,
@@ -10,16 +10,32 @@ import {
   MenuItem,
   Button,
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Container
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
 import AddCategory from "./AddCategory";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 export default function CategoryList() {
-  const [open, setOpen] = React.useState(false);
-  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [editCategory, setEditCategory] = useState({
+    name: "",
+    word_language: "",
+    translation_language: "",
+  });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCategories();
@@ -27,32 +43,44 @@ export default function CategoryList() {
 
   const fetchCategories = async () => {
     const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+    const decodedToken = token ? jwtDecode(token) : null;
+    const user = decodedToken ? decodedToken.user_id : null;
     try {
-      const response = await fetch("/category", {
-        method: "GET",
+      const response = await axios.get("/category", {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
+        params: { userId: user },
       });
-      const data = await response.json();
-      setCategories(data);
+      setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
   };
 
+  const addCategory = (newCategory) => {
+    setCategories((prevCategories) => [...prevCategories, newCategory]);
+  };
+
   const handleEdit = async (categoryId, updatedCategory) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/category/${categoryId}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedCategory),
-      });
-      if (response.ok) {
+      const response = await axios.put(
+        `/category/${categoryId}`,
+        updatedCategory,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.status === 200) {
         fetchCategories();
       } else {
         console.error("Error editing category");
@@ -65,13 +93,12 @@ export default function CategoryList() {
   const handleDelete = async (categoryId) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`/category/${categoryId}`, {
-        method: "DELETE",
+      const response = await axios.delete(`/category/${categoryId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response.ok) {
+      if (response.status === 200) {
         fetchCategories();
       } else {
         console.error("Error deleting category");
@@ -81,12 +108,14 @@ export default function CategoryList() {
     }
   };
 
-  const handleClick = (event) => {
+  const handleClick = (event, categoryId) => {
     setAnchorEl(event.currentTarget);
+    setSelectedCategoryId(categoryId);
   };
 
   const handleCloseMenu = () => {
     setAnchorEl(null);
+    setSelectedCategoryId(null);
   };
 
   const handleAddClickOpen = () => {
@@ -98,6 +127,33 @@ export default function CategoryList() {
     setOpen(false);
   };
 
+  const handleEditDialogOpen = async (categoryId) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(`/category/${categoryId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setEditCategory(response.data);
+      setSelectedCategoryId(categoryId);
+      setEditOpen(true);
+    } catch (error) {
+      console.error("Error fetching category:", error);
+    }
+  };
+
+  const handleEditDialogClose = () => {
+    setEditOpen(false);
+    setSelectedCategoryId(null);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    await handleEdit(selectedCategoryId, editCategory);
+    setEditOpen(false);
+  };
+
   const handleStartLearning = (categoryId) => {
     navigate(`/categories/${categoryId}/learn`);
   };
@@ -107,12 +163,12 @@ export default function CategoryList() {
   };
 
   return (
-    <>
+    <Container maxWidth="lg">
       <Typography variant="h4" sx={{ marginTop: 10, textAlign: "center" }}>
         Moje zestawy słówek
       </Typography>
       {categories.map((category) => (
-        <Card key={category.id} sx={{ marginTop: 10 }}>
+        <Card key={category.id} sx={{ marginTop: 2 }}>
           <CardHeader
             title={category.name}
             subheader={`Język: ${category.word_language || "nieznany"}-${
@@ -120,7 +176,10 @@ export default function CategoryList() {
             }`}
             action={
               <>
-                <IconButton aria-label="settings" onClick={handleClick}>
+                <IconButton
+                  aria-label="settings"
+                  onClick={(event) => handleClick(event, category.id)}
+                >
                   <MoreVertIcon />
                 </IconButton>
 
@@ -130,13 +189,19 @@ export default function CategoryList() {
                   onClose={handleCloseMenu}
                 >
                   <MenuItem
-                    onClick={() =>
-                      handleEdit(category.id, { name: "New Category Name" })
-                    }
+                    onClick={() => {
+                      handleEditDialogOpen(selectedCategoryId);
+                      handleCloseMenu();
+                    }}
                   >
                     Edytuj
                   </MenuItem>
-                  <MenuItem onClick={() => handleDelete(category.id)}>
+                  <MenuItem
+                    onClick={() => {
+                      handleDelete(selectedCategoryId);
+                      handleCloseMenu();
+                    }}
+                  >
                     Usuń
                   </MenuItem>
                 </Menu>
@@ -174,7 +239,70 @@ export default function CategoryList() {
           Utwórz nowy zestaw słówek
         </Button>
       </Box>
-      <AddCategory open={open} handleClose={handleDialogClose} />
-    </>
+      <AddCategory
+        open={open}
+        handleClose={handleDialogClose}
+        addCategory={addCategory}
+      />
+      <Dialog
+        open={editOpen}
+        onClose={handleEditDialogClose}
+        aria-labelledby="edit-dialog-title"
+      >
+        <DialogTitle id="edit-dialog-title">Edytuj zestaw</DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleEditSubmit}>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              label="Nazwa zestawu"
+              type="text"
+              fullWidth
+              value={editCategory.name}
+              onChange={(e) =>
+                setEditCategory({ ...editCategory, name: e.target.value })
+              }
+            />
+            <TextField
+              margin="dense"
+              id="word_language"
+              label="Język słówek"
+              type="text"
+              fullWidth
+              value={editCategory.word_language}
+              onChange={(e) =>
+                setEditCategory({
+                  ...editCategory,
+                  word_language: e.target.value,
+                })
+              }
+            />
+            <TextField
+              margin="dense"
+              id="translation_language"
+              label="Język tłumaczeń"
+              type="text"
+              fullWidth
+              value={editCategory.translation_language}
+              onChange={(e) =>
+                setEditCategory({
+                  ...editCategory,
+                  translation_language: e.target.value,
+                })
+              }
+            />
+            <DialogActions>
+              <Button onClick={handleEditDialogClose} color="primary">
+                Anuluj
+              </Button>
+              <Button type="submit" color="primary">
+                Zapisz
+              </Button>
+            </DialogActions>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </Container>
   );
 }
