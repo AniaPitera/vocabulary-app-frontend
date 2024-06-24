@@ -26,8 +26,8 @@ export default function UserHeader() {
   };
 
   const logout = () => {
-    localStorage.removeItem('token'); 
-    window.location.href = '/login';
+    localStorage.removeItem("token");
+    window.location.href = "/login";
   };
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -41,9 +41,11 @@ export default function UserHeader() {
           >
             Vocabulary App
           </Typography>
-          <Button href="/categories" variant="contained" sx={{ mr: 2 }}>
-            Moje zestawy słówek
-          </Button>
+          <Link to="/categories">
+            <Button variant="contained" sx={{ mr: 2 }}>
+              Moje zestawy słówek
+            </Button>
+          </Link>
           <IconButton
             onClick={handleClick}
             size="large"
