@@ -46,7 +46,7 @@ export default function DefaultHeader() {
               </LightTooltip>
             </Link>
           </IconButton>
-          <Link to="/login">
+          <Link to="/login" style={{ color: "white" }}>
             <Button color="inherit">Zaloguj się</Button>
           </Link>
         </Toolbar>
