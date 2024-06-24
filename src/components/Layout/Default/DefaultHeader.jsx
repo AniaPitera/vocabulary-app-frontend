@@ -49,9 +49,6 @@ export default function DefaultHeader() {
           <Link to="/login" style={{ color: "white" }}>
             <Button color="inherit">Zaloguj się</Button>
           </Link>
-          <Link to="/register" style={{ color: "white" }}>
-            <Button color="inherit">Zarejestruj się</Button>
-          </Link>
         </Toolbar>
       </AppBar>
     </Box>
